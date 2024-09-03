@@ -9,13 +9,13 @@ public class Cidade {
     private long id;
     @Column(nullable = false, unique = true, length = 100)
     private String nome;
-    @Column(nullable = false, unique = true, length = 100)
-    private String estado;
+    @ManyToOne
+    private Estado estado;
 
     public Cidade() {
     }
 
-    public Cidade(String nome, String estado) {
+    public Cidade(String nome, Estado estado) {
         this.nome = nome;
         this.estado = estado;
     }
@@ -28,11 +28,11 @@ public class Cidade {
         this.nome = nome;
     }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
@@ -42,5 +42,11 @@ public class Cidade {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString(){
+        return "Cidade{id=" + this.id + ", nome=" + this.nome +
+                ", estado=" + this.estado + "}";
     }
 }

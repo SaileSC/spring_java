@@ -13,7 +13,7 @@ public class testandoInserirCidade {
         EntityManagerFactory fabricEM = Persistence.createEntityManagerFactory("SistemaPU");
         EntityManager em = fabricEM.createEntityManager();
 
-        Pessoa pessoa = new Pessoa("Ruth", 12, "12316312334");
+        Pessoa pessoa = new Pessoa("12316312334", "Ruth", 12);
 
         EntityTransaction transaction = em.getTransaction();
 

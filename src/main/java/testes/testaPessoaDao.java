@@ -9,7 +9,7 @@ import javax.persistence.Persistence;
 
 public class testaPessoaDao {
     public static void main (String[] args){
-        Pessoa pessoa = new Pessoa("Juliana", 16, "98798798765");
+        Pessoa pessoa = new Pessoa("98798798765","Juliana", 16);
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("SistemaPU");
         EntityManager em = emf.createEntityManager();
 

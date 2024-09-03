@@ -13,10 +13,13 @@ public class Pessoa {
     private String nome;
     @Column(nullable = true)
     private int idade;
+    @ManyToOne
+    private Cidade cidade;
+
     public Pessoa() {
     }
 
-    public Pessoa(String nome, int idade, String cpf) {
+    public Pessoa(String cpf, String nome, int idade) {
         this.nome = nome;
         this.idade = idade;
         this.cpf = cpf;
@@ -60,5 +63,22 @@ public class Pessoa {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public Cidade getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(Cidade cidade) {
+        this.cidade = cidade;
+    }
+
+    @Override
+    public String toString(){
+        return "Pessoa{id=" + this.id +
+                ", cpf=" + this.cpf +
+                ", nome=" + this.nome +
+                ", idade=" + this.idade +
+                ", cidade=" + this.cidade + "}";
     }
 }
