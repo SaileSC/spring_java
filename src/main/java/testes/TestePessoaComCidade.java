@@ -109,11 +109,60 @@ public class TestePessoaComCidade {
         }
     }
 
+    public static void inserirPessoaNaCidade(){
+        EntityManagerFactory fabricaEM = Persistence.createEntityManagerFactory("SistemaPU");
+
+        EntityManager em = fabricaEM.createEntityManager();
+
+        Pessoa pessoa1 = new Pessoa("12345678903","Pessoa com Cidade1",15);
+        Pessoa pessoa2 = new Pessoa("12345678901","Pessoa com Cidade2",32);
+        Pessoa pessoa3 = new Pessoa("12345678902","Pessoa com Cidade3",32);
+
+        Estado estado = new Estado();
+        estado.setNome("São Paulo");
+        estado.setSigla("SP");
+
+        Cidade cidade = new Cidade();
+        cidade.setNome("Campinas");
+        cidade.setEstado(estado);
+
+        cidade.addPessoa(pessoa1);
+        cidade.addPessoa(pessoa2);
+        cidade.addPessoa(pessoa3);
+
+        EntityTransaction transacao = em.getTransaction();
+
+        try {
+            transacao.begin();
+
+            em.persist(estado);
+
+            em.persist(cidade);
+
+            em.persist(pessoa1);
+            em.persist(pessoa2);
+            em.persist(pessoa3);
+
+            transacao.commit();
+
+        }catch(Exception e) {
+
+            if(transacao.isActive()) {
+                transacao.rollback();
+            }
+            throw new RuntimeException(e);
+
+        }finally{
+            em.close();
+            fabricaEM.close();
+        }
+    }
 
     public static void main(String[] args) {
         //inserir();
-        consultar();
-       // inserirComCidadeExistenteNoBD();
+        //consultar();
+        //inserirComCidadeExistenteNoBD();
+        inserirPessoaNaCidade();
 
     }
 

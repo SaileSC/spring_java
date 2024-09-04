@@ -71,6 +71,7 @@ public class Pessoa {
 
     public void setCidade(Cidade cidade) {
         this.cidade = cidade;
+        cidade.addPessoa(this);
     }
 
     @Override
