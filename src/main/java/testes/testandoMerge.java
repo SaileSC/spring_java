@@ -22,7 +22,7 @@ public class testandoMerge {
 
         em.getTransaction().commit();
 
-        pessoa.toText();
+        System.out.println(pessoa.toString());
         em.close();
         fabricEM.close();
     }

@@ -25,14 +25,6 @@ public class Pessoa {
         this.cpf = cpf;
     }
 
-    public void toText(){
-        System.out.println("ID: " + getId());
-        System.out.println("NOME: " + this.nome);
-        System.out.println("IDADE: " + this.idade);
-        System.out.println("CPF: " + this.cpf);
-    }
-
-
     public String getNome() {
         return nome;
     }
@@ -76,10 +68,12 @@ public class Pessoa {
 
     @Override
     public String toString(){
-        return "Pessoa{id=" + this.id +
-                ", cpf=" + this.cpf +
-                ", nome=" + this.nome +
-                ", idade=" + this.idade +
-                ", cidade=" + this.cidade + "}";
+        return "Pessoa{ "+
+                "id:" + this.id +
+                ", cpf:" + this.cpf +
+                ", nome:" + this.nome +
+                ", idade:" + this.idade +
+                ", cidade:" + this.cidade +
+                " }";
     }
 }

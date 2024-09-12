@@ -157,12 +157,69 @@ public class TestePessoaComCidade {
             fabricaEM.close();
         }
     }
+    public static void inserirCidadesEmEstado(){
+        EntityManagerFactory fabricaEM = Persistence.createEntityManagerFactory("SistemaPU");
+        EntityManager em = fabricaEM.createEntityManager();
+
+        Cidade cidade1 = new Cidade("Manaus");
+        Cidade cidade2 = new Cidade("Manacapuru");
+        Cidade cidade3 = new Cidade("Parintis");
+
+        Estado estado = new Estado();
+        estado.setNome("Amazonas");
+        estado.setSigla("AM");
+
+        estado.addCidade(cidade1);
+        estado.addCidade(cidade2);
+        estado.addCidade(cidade3);
+
+        EntityTransaction transacao = em.getTransaction();
+        try {
+            transacao.begin();
+
+            em.persist(estado);
+            em.persist(cidade1);
+            em.persist(cidade2);
+            em.persist(cidade3);
+
+            transacao.commit();
+
+        }catch(Exception e) {
+
+            if(transacao.isActive()) {
+                transacao.rollback();
+            }
+            throw new RuntimeException(e);
+
+        }finally{
+            em.close();
+            fabricaEM.close();
+        }
+    }
+
+
+    public static void consultarEstado(){
+        EntityManagerFactory fabricaEM = Persistence.createEntityManagerFactory("SistemaPU");
+        EntityManager em = fabricaEM.createEntityManager();
+
+        try {
+            Estado estado = em.find(Estado.class,1L);
+            System.out.println(estado.toString());
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        }finally{
+            em.close();
+            fabricaEM.close();
+        }
+    }
 
     public static void main(String[] args) {
         //inserir();
         //consultar();
         //inserirComCidadeExistenteNoBD();
-        inserirPessoaNaCidade();
+        //inserirPessoaNaCidade();
+        //inserirCidadesEmEstado();
+        consultarEstado();
 
     }
 
