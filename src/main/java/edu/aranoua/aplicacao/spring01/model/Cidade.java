@@ -10,7 +10,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "cidade")
 public class Cidade {
     @Id
@@ -22,66 +30,4 @@ public class Cidade {
     private Estado estado;
     @OneToMany(mappedBy = "cidade")
     private List<Pessoa> pessoas = new ArrayList<Pessoa>();
-
-    public Cidade() {
-    }
-
-    public Cidade(String nome, Estado estado) {
-        this.nome = nome;
-        this.estado = estado;
-    }
-
-    public Cidade(String nome) {
-        this.nome = nome;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Estado getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Estado estado) {
-        this.estado = estado;
-        estado.addCidade(this);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public List<Pessoa> getPessoas() {
-        return pessoas;
-    }
-
-    public void setPessoas(List<Pessoa> pessoas) {
-        this.pessoas = pessoas;
-    }
-
-    public void addPessoa(Pessoa pessoa){
-        if(!this.pessoas.contains(pessoa)){
-            this.pessoas.add(pessoa);
-            pessoa.setCidade(this);
-        }
-
-    }
-
-    @Override
-    public String toString(){
-        return "Cidade { "+
-                "id:"+this.id+
-                ", nome:"+this.nome+
-                ", "+this.estado.toString()+
-                " }";
-    }
 }
