@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
     @GetMapping("/init")
     public String init(){
-        System.out.println("Testando HomeController");
-        return "Testando HomeController - HTML";
+        return "Testando HomeController - HTML testes";
     }
-
 }
