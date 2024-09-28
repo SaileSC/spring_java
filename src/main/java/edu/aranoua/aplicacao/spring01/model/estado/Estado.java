@@ -1,14 +1,10 @@
-package edu.aranoua.aplicacao.spring01.model;
-
-import java.util.ArrayList;
-import java.util.List;
+package edu.aranoua.aplicacao.spring01.model.estado;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +23,7 @@ public class Estado {
      private String nome;
      @Column(nullable = false, unique = true)
      private String sigla;
-    //  @OneToMany(mappedBy = "estado")
-    //  private List<Cidade> cidades = new ArrayList<Cidade>();
+     //@OneToMany(mappedBy = "estado")
+     //private List<Cidade> cidades = new ArrayList<Cidade>();
 }
 

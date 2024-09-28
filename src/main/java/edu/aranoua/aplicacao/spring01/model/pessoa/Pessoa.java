@@ -1,15 +1,10 @@
-package edu.aranoua.aplicacao.spring01.model;
-
-import java.util.ArrayList;
-import java.util.List;
+package edu.aranoua.aplicacao.spring01.model.pessoa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,17 +12,19 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "cidade")
-public class Cidade {
+@AllArgsConstructor
+@Entity(name = "pessoa")
+public class Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = true, unique = true,length = 11)
+    private String cpf;
+    @Column(nullable = false)
     private String nome;
-    @ManyToOne
-    private Estado estado;
-    @OneToMany(mappedBy = "cidade")
-    private List<Pessoa> pessoas = new ArrayList<Pessoa>();
+    @Column(nullable = true)
+    private int idade;
+    //@ManyToOne
+    //private Cidade cidade;
 }

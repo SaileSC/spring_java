@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import edu.aranoua.aplicacao.spring01.model.Estado;
+import edu.aranoua.aplicacao.spring01.model.estado.Estado;
 import edu.aranoua.aplicacao.spring01.repository.EstadoRespository;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 
@@ -27,22 +27,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/estado")
 public class EstadoController {
-
     @Autowired
     EstadoRespository respository;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Estado> list() {
-        return respository.findAll();
+    public ResponseEntity<?> list() {
+        List<Estado> estados = respository.findAll();
+        if(estados.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(estados);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Estado> getMethodName(@PathVariable long id) {
+    public ResponseEntity<Estado> read(@PathVariable long id) {
         Optional<Estado> opEstado = respository.findById(id);
-        if (opEstado.isPresent()) {
-            return ResponseEntity.ok(opEstado.get());
-        }
-        return ResponseEntity.notFound().build();
+        return opEstado.map(ResponseEntity::ok).orElseThrow(() -> new ObjectnotFoundException("Estado não encontrado ID: " + id));
     }
 
 
@@ -57,12 +57,11 @@ public class EstadoController {
                     .toUri();
 
             return ResponseEntity.created(uri).body(estado);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+        } catch (RuntimeException e) {
+            throw   new RuntimeException(e);
         }
-
     }
-    
+
 
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,9 +75,9 @@ public class EstadoController {
             Estado altEstado = respository.save(estado);
 
             return ResponseEntity.ok().body(altEstado);
-            
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
     }
     

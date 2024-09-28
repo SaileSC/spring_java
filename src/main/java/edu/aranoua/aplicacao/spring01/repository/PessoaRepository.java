@@ -1,11 +1,9 @@
 package edu.aranoua.aplicacao.spring01.repository;
 
+import edu.aranoua.aplicacao.spring01.model.pessoa.Pessoa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import edu.aranoua.aplicacao.spring01.model.estado.Estado;
-
 @Repository
-public interface EstadoRespository extends JpaRepository<Estado, Long>{
-   
+public interface PessoaRepository extends JpaRepository<Pessoa, Long> {
 }
