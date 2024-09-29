@@ -1,9 +1,13 @@
 package edu.aranoua.aplicacao.spring01.controller;
 
 
-import edu.aranoua.aplicacao.spring01.model.cidade.Cidade;
-import edu.aranoua.aplicacao.spring01.model.cidade.CidadeDTO;
+import edu.aranoua.aplicacao.spring01.model.Cidade;
+import edu.aranoua.aplicacao.spring01.dto.cidade.CreateCidadeDTO;
+import edu.aranoua.aplicacao.spring01.dto.cidade.CidadeDTO;
 import edu.aranoua.aplicacao.spring01.repository.CidadeRepository;
+import edu.aranoua.aplicacao.spring01.repository.EstadoRespository;
+import edu.aranoua.aplicacao.spring01.service.EstadoService;
+import edu.aranoua.aplicacao.spring01.service.ServiceCidade;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,52 +23,52 @@ import java.util.List;
 @RequestMapping("/api/cidade")
 public class CidadeController {
     @Autowired
-    CidadeRepository repository;
+    ServiceCidade serviceCidade;
+    @Autowired
+    EstadoService estadoService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Cidade>> list(){
-        List<Cidade> cidades = repository.findAll();
-        if(cidades.isEmpty()){
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok().body(cidades);
+    public ResponseEntity<List<CidadeDTO>> list(){
+        List<Cidade> cidades = serviceCidade.list();
+
+        List<CidadeDTO> cidadesDTO = cidades.stream()
+                .map(CidadeDTO::new)
+                .toList();
+
+        return ResponseEntity.ok().body(cidadesDTO);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Cidade> cidade(@PathVariable long id){
-        Cidade cidade = repository.findById(id).orElseThrow(() ->
-                new ObjectnotFoundException("Cidade ID: " + id));
-        return ResponseEntity.ok().body(cidade);
+    public ResponseEntity<CidadeDTO> cidade(@PathVariable long id){
+        Cidade cidade = serviceCidade.read(id);
+        CidadeDTO cidadeDTO = new CidadeDTO(cidade);
+        return ResponseEntity.ok().body(cidadeDTO);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Cidade> create(@RequestBody CidadeDTO body){
+    public ResponseEntity<CidadeDTO> create(@RequestBody CreateCidadeDTO body){
         try{
-            Cidade nCidade = new Cidade();
-            BeanUtils.copyProperties(body, nCidade);
-            Cidade createCidade = repository.save(nCidade);
+            Cidade cidade = serviceCidade.create(body.getObject(estadoService));
 
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}")
-                    .buildAndExpand(createCidade.getId())
+                    .buildAndExpand(cidade.getId())
                     .toUri();
 
-            return ResponseEntity.created(uri).body(createCidade);
+            CidadeDTO cidadeDTO = new CidadeDTO(cidade);
+            return ResponseEntity.created(uri).body(cidadeDTO);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Cidade> update(@PathVariable long id,
-                                         @RequestBody CidadeDTO body){
+    public ResponseEntity<CidadeDTO> update(@PathVariable long id,
+                                         @RequestBody CreateCidadeDTO body){
         try{
-            Cidade cidade = repository.findById(id).orElseThrow(() ->
-                    new ObjectnotFoundException("Cidade não encontrada ID: " + id));
-
-            BeanUtils.copyProperties(body, cidade);
-            Cidade updateCidade = repository.save(cidade);
-            return ResponseEntity.ok().body(updateCidade);
+            Cidade cidade = serviceCidade.update(id, body.getObject(estadoService));
+            CidadeDTO cidadeDTO = new CidadeDTO(cidade);
+            return ResponseEntity.ok().body(cidadeDTO);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -72,10 +76,8 @@ public class CidadeController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> delete(@PathVariable long id){
-        Cidade cidade = repository.findById(id).orElseThrow(() ->
-                new ObjectnotFoundException("Cidade não encontrada ID: " + id));
         try{
-            repository.delete(cidade);
+            serviceCidade.delete(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             throw new RuntimeException(e);

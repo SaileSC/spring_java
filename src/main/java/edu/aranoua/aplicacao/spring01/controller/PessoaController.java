@@ -1,9 +1,11 @@
 package edu.aranoua.aplicacao.spring01.controller;
 
 
-import edu.aranoua.aplicacao.spring01.model.pessoa.Pessoa;
-import edu.aranoua.aplicacao.spring01.model.pessoa.PessoaDTO;
-import edu.aranoua.aplicacao.spring01.repository.PessoaRepository;
+import edu.aranoua.aplicacao.spring01.dto.pessoa.PessoaDTO;
+import edu.aranoua.aplicacao.spring01.model.Pessoa;
+import edu.aranoua.aplicacao.spring01.dto.pessoa.PessoaCreateDTO;
+import edu.aranoua.aplicacao.spring01.service.ServiceCidade;
+import edu.aranoua.aplicacao.spring01.service.ServicePessoa;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,50 +21,53 @@ import java.util.List;
 @RequestMapping("/api/pessoa")
 public class PessoaController {
     @Autowired
-    PessoaRepository repository;
+    ServicePessoa servicePessoa;
+    @Autowired
+    ServiceCidade serviceCidade;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Pessoa>> list(){
-        List<Pessoa> pessoas = repository.findAll();
+    public ResponseEntity<List<PessoaDTO>> list(){
+        List<Pessoa> pessoas = servicePessoa.list();
         if(pessoas.isEmpty()){
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok().body(pessoas);
+
+        List<PessoaDTO> pessoasDTO = pessoas.stream()
+                .map(PessoaDTO::new)
+                .toList();
+
+        return ResponseEntity.ok().body(pessoasDTO);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public  ResponseEntity<Pessoa> read(@PathVariable long id){
-        Pessoa pessoa = repository.findById(id).orElseThrow(() ->
-                new ObjectnotFoundException("Pessoa ID: " + id + ", não encontrada"));
-        return ResponseEntity.ok().body(pessoa);
+    public  ResponseEntity<PessoaDTO> read(@PathVariable long id){
+        Pessoa pessoa = servicePessoa.read(id);
+        PessoaDTO pessoaDTO = new PessoaDTO(pessoa);
+        return ResponseEntity.ok().body(pessoaDTO);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Pessoa> create(@RequestBody Pessoa body){
+    public ResponseEntity<PessoaDTO> create(@RequestBody PessoaCreateDTO body){
         try{
-            Pessoa pessoa = repository.save(body);
+            Pessoa pessoa = servicePessoa.create(body.getObject(serviceCidade));
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}")
                     .buildAndExpand(pessoa.getId())
                     .toUri();
-            return ResponseEntity.created(uri).body(pessoa);
+            PessoaDTO pessoaDTO = new PessoaDTO(pessoa);
+            return ResponseEntity.created(uri).body(pessoaDTO);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public  ResponseEntity<Pessoa> update(@PathVariable long id,
-                                          @RequestBody PessoaDTO body){
-
+    public  ResponseEntity<PessoaDTO> update(@PathVariable long id,
+                                          @RequestBody PessoaCreateDTO body){
         try {
-            Pessoa pessoa = repository.findById(id).orElseThrow(() ->
-                    new ObjectnotFoundException("Pessoa não encontrada ID: " + id));
-
-            BeanUtils.copyProperties(body, pessoa);
-
-            Pessoa updatePessoa = repository.save(pessoa);
-            return ResponseEntity.ok().body(updatePessoa);
+            Pessoa pessoa = servicePessoa.upadte(id, body.getObject(serviceCidade));
+            PessoaDTO pessoaDTO = new PessoaDTO(pessoa);
+            return ResponseEntity.ok().body(pessoaDTO);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -71,9 +76,7 @@ public class PessoaController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> delete(@PathVariable long id){
         try{
-            Pessoa pessoa = repository.findById(id).orElseThrow(() ->
-                    new ObjectnotFoundException("Pessoa não encontrada ID: " + id));
-            repository.delete(pessoa);
+            servicePessoa.delete(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             throw new RuntimeException(e);

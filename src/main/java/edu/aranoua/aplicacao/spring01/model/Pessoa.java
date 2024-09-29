@@ -1,10 +1,7 @@
-package edu.aranoua.aplicacao.spring01.model.pessoa;
+package edu.aranoua.aplicacao.spring01.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +22,7 @@ public class Pessoa {
     private String nome;
     @Column(nullable = true)
     private int idade;
-    //@ManyToOne
-    //private Cidade cidade;
+    @JsonIgnore
+    @ManyToOne
+    private Cidade cidade;
 }
