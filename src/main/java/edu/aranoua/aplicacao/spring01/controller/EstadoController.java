@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import edu.aranoua.aplicacao.spring01.dto.estado.CreateEstadoDTO;
 import edu.aranoua.aplicacao.spring01.dto.estado.EstadoDTO;
 import edu.aranoua.aplicacao.spring01.service.EstadoService;
+import jakarta.persistence.Entity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class EstadoController {
     @Autowired
     EstadoService estadoService;
-
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EstadoDTO>> list() {
