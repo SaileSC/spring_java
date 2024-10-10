@@ -1,47 +1,56 @@
 package edu.aranoua.aplicacao.spring01.service;
 
 
+import edu.aranoua.aplicacao.spring01.dto.pessoa.PessoaCreateDTO;
+import edu.aranoua.aplicacao.spring01.dto.pessoa.PessoaDTO;
 import edu.aranoua.aplicacao.spring01.model.Pessoa;
+import edu.aranoua.aplicacao.spring01.repository.CidadeRepository;
 import edu.aranoua.aplicacao.spring01.repository.PessoaRepository;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ServicePessoa {
-
     @Autowired
     PessoaRepository pessoaRepository;
+    @Autowired
+    CidadeRepository cidadeRepository;
 
-    public List<Pessoa> list(){
-        return pessoaRepository.findAll();
+    public List<PessoaDTO> list(){
+        return pessoaRepository.findAll()
+                .stream()
+                .map(PessoaDTO::new)
+                .toList();
     }
 
-    public Pessoa read(long id){
-        return pessoaRepository.findById(id).orElseThrow(() ->
-                new ObjectnotFoundException("Pesssoa não encontrada ID:" + id));
+    public PessoaDTO read(long id){
+        Optional<Pessoa> pessoa = pessoaRepository.findById(id);
+        return pessoa.map(PessoaDTO::new).orElseThrow(() ->
+                new ObjectnotFoundException(("Pessoa não encontrado ID:" + id)));
     }
 
-    public Pessoa create(Pessoa body){
+    public PessoaDTO create(PessoaCreateDTO body){
         try {
-            return pessoaRepository.save(body);
+            return new PessoaDTO(pessoaRepository.save(body.getObject(cidadeRepository)));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Pessoa upadte(long id, Pessoa body){
+    public PessoaDTO upadte(long id, PessoaCreateDTO body){
         try {
             Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(() ->
-                    new ObjectnotFoundException("Pesssoa não encontrada ID:" + body.getId()));
+                    new ObjectnotFoundException("Pesssoa não encontrada ID:" + id));
 
             pessoa.setNome(body.getNome());
             pessoa.setCpf(body.getCpf());
             pessoa.setIdade(body.getIdade());
 
-            return pessoaRepository.save(pessoa);
+            return new PessoaDTO(pessoaRepository.save(pessoa));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

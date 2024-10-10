@@ -1,5 +1,7 @@
 package edu.aranoua.aplicacao.spring01.service;
 
+import edu.aranoua.aplicacao.spring01.dto.pais.PaisCreateDTO;
+import edu.aranoua.aplicacao.spring01.dto.pais.PaisDTO;
 import edu.aranoua.aplicacao.spring01.model.Pais;
 import edu.aranoua.aplicacao.spring01.repository.PaisRespository;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
@@ -15,28 +17,32 @@ public class PaisService {
     PaisRespository paisRespository;
 
 
-    public List<Pais> list(){
-        return paisRespository.findAll();
+    public List<PaisDTO> list(){
+        return paisRespository.findAll()
+                .stream()
+                .map(PaisDTO::new)
+                .toList();
     }
 
 
-    public Pais read(long id){
-        return paisRespository.findById(id).orElseThrow(() ->
-                new ObjectnotFoundException("Pais não encontrado ID:" + id));
+    public PaisDTO read(long id){
+        return paisRespository.findById(id)
+                .map(PaisDTO::new).orElseThrow(() ->
+                        new ObjectnotFoundException("pais não encontrado ID:" + id));
     }
 
-    public Pais create(Pais body){
-        return paisRespository.save(body);
+    public PaisDTO create(PaisCreateDTO body){
+        return new PaisDTO(paisRespository.save(body.build()));
     }
 
-    public Pais update(long id, Pais body){
+    public PaisDTO update(long id, PaisCreateDTO body){
         Pais pais = paisRespository.findById(id).orElseThrow(() ->
                 new ObjectnotFoundException("pais não encontrado ID:" + id));
         try{
             pais.setNome(body.getNome());
             pais.setSigla(body.getSigla());
 
-            return paisRespository.save(pais);
+            return new PaisDTO(paisRespository.save(pais));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

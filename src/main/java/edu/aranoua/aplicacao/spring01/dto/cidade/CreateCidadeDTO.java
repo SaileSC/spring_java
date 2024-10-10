@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -17,12 +19,14 @@ public class CreateCidadeDTO {
     private  String nome;
     private  String estado;
 
-    public Cidade getObject(EstadoService service){
+    public Cidade getObject(EstadoRespository respository){
         Cidade cidade = new Cidade();
-        cidade.setNome(this.nome);
-        Estado estado = service.read(this.estado);
-        cidade.setEstado(estado);
-
+        Optional<Estado> estado = respository.findByNome(this.estado);
+        if(estado.isPresent()){
+            cidade.setNome(this.nome);
+            cidade.setEstado(estado.get());
+            return cidade;
+        }
         return cidade;
     }
 };

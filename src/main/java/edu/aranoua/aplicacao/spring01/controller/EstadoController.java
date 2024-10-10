@@ -10,6 +10,7 @@ import edu.aranoua.aplicacao.spring01.service.EstadoService;
 import jakarta.persistence.Entity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,71 +35,28 @@ public class EstadoController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EstadoDTO>> list() {
-        try{
-            List<Estado> estados = estadoService.list();
-            List<EstadoDTO> estadosDTO = estados.stream()
-                    .map(EstadoDTO::new).collect(Collectors.toList());
-            return ResponseEntity.ok().body(estadosDTO);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok().body(estadoService.list());
     }
 
-
-    @GetMapping(value = "/{nome}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EstadoDTO> read(@PathVariable String nome) {
-        try{
-            Estado estado = estadoService.read(nome);
-            EstadoDTO estadoDTO = new EstadoDTO(estado);
-            return ResponseEntity.ok().body(estadoDTO);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EstadoDTO> read(@PathVariable long id) {
+        return ResponseEntity.ok().body(estadoService.read(id));
     }
-
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EstadoDTO> criar(@RequestBody CreateEstadoDTO body) {
-        try {
-            Estado estado = estadoService.create(body.getObject());
-
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{nome}")
-                    .buildAndExpand(estado.getNome().toLowerCase())
-                    .toUri();
-
-            EstadoDTO estadoDTO = new EstadoDTO(estado);
-
-            return ResponseEntity.created(uri).body(estadoDTO);
-        } catch (RuntimeException e) {
-            throw   new RuntimeException(e);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(estadoService.create(body));
     }
 
-
-
-    @PutMapping(value = "/{nome}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EstadoDTO> atualizar(@PathVariable String nome, @RequestBody CreateEstadoDTO body) {
-        try {
-            Estado estado = estadoService.update(nome, body.getObject());
-
-            EstadoDTO estadoDTO = new EstadoDTO(estado);
-            return ResponseEntity.ok().body(estadoDTO);
-
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EstadoDTO> atualizar(@PathVariable long id, @RequestBody CreateEstadoDTO body) {
+            return ResponseEntity.ok().body(estadoService.update(id, body));
     }
-    
 
-    @DeleteMapping(value = "/{nome}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> delete(@PathVariable String nome){
-         try {
-             estadoService.delete(nome);
-             return ResponseEntity.ok().build();
-         } catch (RuntimeException e) {
-             throw new RuntimeException(e);
-         }
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> delete(@PathVariable long id){
+            estadoService.delete(id);
+            return ResponseEntity.ok().build();
     }
     
 }

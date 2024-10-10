@@ -11,6 +11,7 @@ import edu.aranoua.aplicacao.spring01.service.ServiceCidade;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,58 +30,28 @@ public class CidadeController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CidadeDTO>> list(){
-        List<Cidade> cidades = serviceCidade.list();
-
-        List<CidadeDTO> cidadesDTO = cidades.stream()
-                .map(CidadeDTO::new)
-                .toList();
-
-        return ResponseEntity.ok().body(cidadesDTO);
+        return ResponseEntity.ok().body(serviceCidade.list());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CidadeDTO> cidade(@PathVariable long id){
-        Cidade cidade = serviceCidade.read(id);
-        CidadeDTO cidadeDTO = new CidadeDTO(cidade);
-        return ResponseEntity.ok().body(cidadeDTO);
+        return ResponseEntity.ok().body(serviceCidade.read(id));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CidadeDTO> create(@RequestBody CreateCidadeDTO body){
-        try{
-            Cidade cidade = serviceCidade.create(body.getObject(estadoService));
-
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(cidade.getId())
-                    .toUri();
-
-            CidadeDTO cidadeDTO = new CidadeDTO(cidade);
-            return ResponseEntity.created(uri).body(cidadeDTO);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(serviceCidade.create(body));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CidadeDTO> update(@PathVariable long id,
                                          @RequestBody CreateCidadeDTO body){
-        try{
-            Cidade cidade = serviceCidade.update(id, body.getObject(estadoService));
-            CidadeDTO cidadeDTO = new CidadeDTO(cidade);
-            return ResponseEntity.ok().body(cidadeDTO);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+       return ResponseEntity.ok().body(serviceCidade.update(id, body));
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> delete(@PathVariable long id){
-        try{
-            serviceCidade.delete(id);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        serviceCidade.delete(id);
+        return ResponseEntity.ok().build();
     }
 }
