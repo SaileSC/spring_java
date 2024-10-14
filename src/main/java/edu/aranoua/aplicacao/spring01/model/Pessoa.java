@@ -17,11 +17,11 @@ public class Pessoa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(nullable = true, unique = true,length = 11)
-    private String cpf;
-    @Column(nullable = false)
     private String nome;
-    @Column(nullable = true)
-    private int idade;
+    @Column(nullable = false)
+    private String email;
+    @Column(nullable = false)
+    private String telefone;
     @JsonIgnore
     @ManyToOne
     private Cidade cidade;

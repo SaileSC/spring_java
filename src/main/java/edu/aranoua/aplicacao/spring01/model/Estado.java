@@ -21,7 +21,7 @@ public class Estado {
      private String nome;
      @Column(nullable = false, unique = true)
      private String sigla;
-     @OneToMany(mappedBy = "estado")
-     private List<Cidade> cidades;
+     @ManyToOne
+     private Pais pais;
 }
 

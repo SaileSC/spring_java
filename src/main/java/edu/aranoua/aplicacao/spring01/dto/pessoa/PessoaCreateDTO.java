@@ -17,8 +17,8 @@ import java.util.Optional;
 @NoArgsConstructor
 public class PessoaCreateDTO {
     private String nome;
-    private int idade;
-    private String cpf;
+    private String email;
+    private String telefone;
     private  String cidade;
 
 
@@ -26,9 +26,9 @@ public class PessoaCreateDTO {
         Pessoa pessoa = new Pessoa();
         Optional<Cidade> cidade = repository.findByNome(this.cidade);
         if(cidade.isPresent()){
-            pessoa.setIdade(this.idade);
             pessoa.setNome(this.nome);
-            pessoa.setCpf(this.cpf);
+            pessoa.setEmail(this.email);
+            pessoa.setTelefone(this.telefone);
             pessoa.setCidade(cidade.get());
             return pessoa;
         }

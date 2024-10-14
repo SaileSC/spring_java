@@ -5,6 +5,7 @@ import edu.aranoua.aplicacao.spring01.dto.estado.CreateEstadoDTO;
 import edu.aranoua.aplicacao.spring01.dto.estado.EstadoDTO;
 import edu.aranoua.aplicacao.spring01.model.Estado;
 import edu.aranoua.aplicacao.spring01.repository.EstadoRespository;
+import edu.aranoua.aplicacao.spring01.repository.PaisRespository;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import java.util.Optional;
 public class EstadoService {
     @Autowired
     EstadoRespository respositoryEstado;
+    @Autowired
+    PaisRespository paisRespository;
 
     public List<EstadoDTO> list(){
         return respositoryEstado.findAll()
@@ -33,7 +36,7 @@ public class EstadoService {
 
     public EstadoDTO create(CreateEstadoDTO estado){
         try {
-            return new EstadoDTO(respositoryEstado.save(estado.getObject()));
+            return new EstadoDTO(respositoryEstado.save(estado.getObject(paisRespository)));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

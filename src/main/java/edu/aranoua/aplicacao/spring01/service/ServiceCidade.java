@@ -26,7 +26,6 @@ public class ServiceCidade {
                 .toList();
     }
 
-
     public CidadeDTO read(long id){
         Optional<Cidade> cidade = cidadeRepository.findById(id);
         return cidade.map(CidadeDTO::new).orElseThrow(() ->

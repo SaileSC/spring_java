@@ -16,24 +16,24 @@ import lombok.Setter;
 public class PessoaDTO {
     private long id;
     private String nome;
-    private int idade;
-    private String cpf;
+    private String email;
+    private String telefone;
     private String cidade;
 
 
     public PessoaDTO(Pessoa pessoa){
         this.id = pessoa.getId();
-        this.cpf = pessoa.getCpf();
         this.nome = pessoa.getNome();
-        this.idade = pessoa.getIdade();
+        this.email = pessoa.getEmail();
+        this.telefone = pessoa.getTelefone();
         this.cidade = pessoa.getCidade().getNome();
     }
 
     public void build(Pessoa pessoa){
         this.id = pessoa.getId();
-        this.cpf = pessoa.getCpf();
         this.nome = pessoa.getNome();
-        this.idade = pessoa.getIdade();
+        this.email = pessoa.getEmail();
+        this.telefone = pessoa.getTelefone();
         this.cidade = pessoa.getCidade().getNome();
     }
 };

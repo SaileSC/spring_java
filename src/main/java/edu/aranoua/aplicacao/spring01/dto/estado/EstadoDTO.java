@@ -11,16 +11,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EstadoDTO{
+    private long id;
     private String nome;
     private String sigla;
+    private String pais;
 
     public EstadoDTO(Estado estado){
+        this.id = estado.getId();
         this.nome = estado.getNome();
         this.sigla = estado.getSigla();
-    }
-
-    public void build(Estado estado){
-        this.nome = estado.getNome();
-        this.sigla = estado.getSigla();
+        this.pais = estado.getPais().getNome();
     }
 };

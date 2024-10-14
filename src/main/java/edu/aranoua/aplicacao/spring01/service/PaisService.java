@@ -16,14 +16,12 @@ public class PaisService {
     @Autowired
     PaisRespository paisRespository;
 
-
     public List<PaisDTO> list(){
         return paisRespository.findAll()
                 .stream()
                 .map(PaisDTO::new)
                 .toList();
     }
-
 
     public PaisDTO read(long id){
         return paisRespository.findById(id)

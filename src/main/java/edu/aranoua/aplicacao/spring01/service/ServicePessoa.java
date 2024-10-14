@@ -3,6 +3,7 @@ package edu.aranoua.aplicacao.spring01.service;
 
 import edu.aranoua.aplicacao.spring01.dto.pessoa.PessoaCreateDTO;
 import edu.aranoua.aplicacao.spring01.dto.pessoa.PessoaDTO;
+import edu.aranoua.aplicacao.spring01.model.Cidade;
 import edu.aranoua.aplicacao.spring01.model.Pessoa;
 import edu.aranoua.aplicacao.spring01.repository.CidadeRepository;
 import edu.aranoua.aplicacao.spring01.repository.PessoaRepository;
@@ -46,11 +47,16 @@ public class ServicePessoa {
             Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(() ->
                     new ObjectnotFoundException("Pesssoa não encontrada ID:" + id));
 
-            pessoa.setNome(body.getNome());
-            pessoa.setCpf(body.getCpf());
-            pessoa.setIdade(body.getIdade());
+            Optional<Cidade> cidade = cidadeRepository.findByNome(body.getCidade());
 
-            return new PessoaDTO(pessoaRepository.save(pessoa));
+            if(cidade.isPresent()){
+                pessoa.setNome(body.getNome());
+                pessoa.setEmail(body.getEmail());
+                pessoa.setTelefone(body.getTelefone());
+                pessoa.setCidade(cidade.get());
+                return new PessoaDTO(pessoaRepository.save(pessoa));
+            }
+            throw new ObjectnotFoundException("Ciade não encontrada NOME:" + body.getCidade());
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

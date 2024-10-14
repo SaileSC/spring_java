@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaisRespository extends JpaRepository<Pais, Long> {
+    Pais findByNome(String nome);
 }

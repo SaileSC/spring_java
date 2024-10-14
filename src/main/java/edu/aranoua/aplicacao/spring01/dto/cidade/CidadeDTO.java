@@ -12,15 +12,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CidadeDTO {
+    private long id;
     private  String nome;
     private  String estado;
 
     public CidadeDTO(Cidade cidade){
-        this.nome = cidade.getNome();
-        this.estado = cidade.getEstado().getNome();
-    }
-
-    public void build(Cidade cidade){
+        this.id = cidade.getId();
         this.nome = cidade.getNome();
         this.estado = cidade.getEstado().getNome();
     }
