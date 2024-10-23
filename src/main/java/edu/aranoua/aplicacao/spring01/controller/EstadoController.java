@@ -10,6 +10,9 @@ import edu.aranoua.aplicacao.spring01.service.EstadoService;
 import jakarta.persistence.Entity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +47,36 @@ public class EstadoController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EstadoDTO> criar(@RequestBody CreateEstadoDTO body) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(estadoService.create(body));
+    public ResponseEntity<EntityModel<EstadoDTO>> criar(@RequestBody CreateEstadoDTO body) {
+        EstadoDTO estado = estadoService.create(body);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(estado.getId())
+                .toUri();
+        Link list = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(EstadoController.class).list()
+        ).withRel("list");
+
+        Link read = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(EstadoController.class).read(estado.getId())
+        ).withRel("read");
+
+        Link update = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(EstadoController.class).update(estado.getId(), body)
+        ).withRel("update");
+
+        Link delete = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(EstadoController.class).delete(estado.getId())
+        ).withRel("delete");
+
+        EntityModel<EstadoDTO> estadoModel = EntityModel.of(estado)
+                .add(list, read, update, delete);
+        return ResponseEntity.created(uri).body(estadoModel);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EstadoDTO> atualizar(@PathVariable long id, @RequestBody CreateEstadoDTO body) {
+    public ResponseEntity<EstadoDTO> update(@PathVariable long id, @RequestBody CreateEstadoDTO body) {
             return ResponseEntity.ok().body(estadoService.update(id, body));
     }
 

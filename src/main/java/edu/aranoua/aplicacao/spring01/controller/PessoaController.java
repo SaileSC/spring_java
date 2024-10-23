@@ -10,11 +10,15 @@ import edu.aranoua.aplicacao.spring01.service.ServicePessoa;
 import edu.aranoua.aplicacao.spring01.service.exception.ObjectnotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -38,8 +42,33 @@ public class PessoaController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PessoaDTO> create(@RequestBody PessoaCreateDTO body){
-            return ResponseEntity.status(HttpStatus.CREATED).body(servicePessoa.create(body));
+    public ResponseEntity<EntityModel<PessoaDTO>> create(@RequestBody PessoaCreateDTO body, UriComponentsBuilder uriBuilder){
+            PessoaDTO pessoa = servicePessoa.create(body);
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(pessoa.getId())
+                    .toUri();
+
+            Link list = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(PessoaController.class).list()
+            ).withRel("list");
+
+            Link read = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(PessoaController.class).read(pessoa.getId())
+            ).withRel("read");
+
+            Link update = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(PessoaController.class).update(pessoa.getId(), body)
+            ).withRel("update");
+
+            Link delete = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(PessoaController.class).delete(pessoa.getId())
+            ).withRel("delete");
+
+            EntityModel<PessoaDTO> pessoaModel = EntityModel.of(pessoa)
+                    .add(list, read, update, delete);
+            return ResponseEntity.created(uri).body(pessoaModel);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,7 +77,7 @@ public class PessoaController {
         return ResponseEntity.ok().body(servicePessoa.upadte(id, body));
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> delete(@PathVariable long id){
         try{
             servicePessoa.delete(id);

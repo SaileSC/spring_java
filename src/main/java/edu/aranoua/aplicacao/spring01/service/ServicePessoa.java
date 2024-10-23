@@ -47,16 +47,11 @@ public class ServicePessoa {
             Pessoa pessoa = pessoaRepository.findById(id).orElseThrow(() ->
                     new ObjectnotFoundException("Pesssoa não encontrada ID:" + id));
 
-            Optional<Cidade> cidade = cidadeRepository.findByNome(body.getCidade());
-
-            if(cidade.isPresent()){
                 pessoa.setNome(body.getNome());
                 pessoa.setEmail(body.getEmail());
                 pessoa.setTelefone(body.getTelefone());
-                pessoa.setCidade(cidade.get());
+                pessoa.setCidade(body.getObject(cidadeRepository).getCidade());
                 return new PessoaDTO(pessoaRepository.save(pessoa));
-            }
-            throw new ObjectnotFoundException("Ciade não encontrada NOME:" + body.getCidade());
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }

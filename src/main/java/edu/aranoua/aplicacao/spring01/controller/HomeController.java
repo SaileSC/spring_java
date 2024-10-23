@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HomeController {
-    @GetMapping("/init")
+    @GetMapping("/")
     public String init(){
-        return "Testando HomeController - HTML testes";
+        return "<div style='background-color:green; font-size:30; width: 400px'" +
+                "> Recursos acessiveis: <br> Paises : /api/pais " +
+                "<br> Estados: /api/estado <br> Cidade: /api/cidade <br>  Pessoa: /api/pessoa</div>";
     }
 }
